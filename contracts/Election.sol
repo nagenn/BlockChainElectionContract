@@ -11,26 +11,36 @@ contract Election {
     // Store accounts that have voted
     mapping(address => bool) public voters;
     // Store Candidates
-    // Fetch Candidate
     mapping(uint => Candidate) public candidates;
+
+    /*Solidity tip: mapping is like an array or hashmap
+    it has a key value pair, here  uint is the datatype of the key 
+    and Candidate is the data type of the value which is a Candidate struct
+    candidates is the name of the mapping */
+
     // Store Candidates Count
     uint public candidatesCount;
+
+/*Solidity tip: local variables which are NOT instance variables
+    begin with an '_' */
 
     // voted event
     event votedEvent (
         uint indexed _candidateId
     );
 
-    function Election () public {
-        addCandidate("Candidate 1");
-        addCandidate("Candidate 2");
+    constructor () public {
+        addCandidate("Superman");
+        addCandidate("Batman");
     }
 
-    function addCandidate (string _name) private {
+    function addCandidate (string memory _name) private {
         candidatesCount ++;
         candidates[candidatesCount] = Candidate(candidatesCount, _name, 0);
     }
-
+    function getCandidate(uint _candidateId) public view returns(string memory) {
+        return candidates[_candidateId].name;
+    }
     function vote (uint _candidateId) public {
         // require that they haven't voted before
         require(!voters[msg.sender]);
@@ -45,6 +55,6 @@ contract Election {
         candidates[_candidateId].voteCount ++;
 
         // trigger voted event
-        votedEvent(_candidateId);
+        emit votedEvent(_candidateId);
     }
 }
